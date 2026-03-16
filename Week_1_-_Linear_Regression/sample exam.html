@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Python Live Exam</title>
+    <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; padding: 20px; }
+        .card { background: white; max-width: 700px; margin: auto; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        
+        /* Custom Editor Styling */
+        .code-editor { width: 100%; height: 150px; font-family: 'Courier New', monospace; font-size: 14px; padding: 10px; background: #1e1e1e; color: #d4d4d4; border-radius: 6px; border: none; outline: none; resize: vertical; margin-bottom: 10px; box-sizing: border-box;}
+        .output-console { width: 100%; background: #f4f4f4; padding: 10px; border-radius: 6px; font-family: monospace; color: #333; min-height: 40px; box-sizing: border-box; border: 1px solid #ddd; white-space: pre-wrap;}
+        
+        /* Buttons */
+        .run-btn { background: #28a745; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-bottom: 10px;}
+        .run-btn:hover { background: #218838; }
+        .submit-btn { background: #007bff; color: white; border: none; padding: 12px 24px; border-radius: 6px; cursor: pointer; width: 100%; font-size: 16px; font-weight: bold;}
+        .submit-btn:hover { background: #0056b3; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>🐍 Python Midterm</h1>
+        <p>Complete the tasks below. Type your answers into the dark boxes and click <strong>Run</strong> to test your code before submitting.</p>
+    </div>
+
+    <div class="card">
+        <h3>Question 1: Calculate Area</h3>
+        <p>Write a function <code>get_area(radius)</code> that returns the area of a circle.</p>
+        
+        <textarea id="q1-code" class="code-editor" spellcheck="false">
+import math
+
+def get_area(radius):
+    # Your code here
+    return 0
+
+print("Test with radius 5: " + str(get_area(5)))</textarea>
+        
+        <button onclick="runPython('q1-code', 'q1-out')" class="run-btn">▶ Run Question 1</button>
+        <pre id="q1-out" class="output-console"></pre>
+    </div>
+
+    <div class="card">
+        <h3>Question 2: Even or Odd</h3>
+        <p>Write a function <code>is_even(num)</code> that returns <code>True</code> if the number is even.</p>
+        
+        <textarea id="q2-code" class="code-editor" spellcheck="false">
+def is_even(num):
+    # Your code here
+    pass
+
+print("Test with 4: " + str(is_even(4)))</textarea>
+        
+        <button onclick="runPython('q2-code', 'q2-out')" class="run-btn">▶ Run Question 2</button>
+        <pre id="q2-out" class="output-console"></pre>
+    </div>
+
+    <div class="card">
+        <button class="submit-btn" onclick="submitExam()">Submit My Exam</button>
+    </div>
+
+    <script>
+        // Tab key support for textareas
+        document.querySelectorAll('textarea').forEach(el => {
+            el.addEventListener('keydown', function(e) {
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    let start = this.selectionStart;
+                    let end = this.selectionEnd;
+                    this.value = this.value.substring(0, start) + "    " + this.value.substring(end);
+                    this.selectionStart = this.selectionEnd = start + 4;
+                }
+            });
+        });
+
+        // Skulpt Execution Logic
+        function runPython(codeId, outId) {
+            var prog = document.getElementById(codeId).value;
+            var mypre = document.getElementById(outId);
+            mypre.innerHTML = ''; // Clear previous output
+            
+            Sk.pre = outId;
+            Sk.configure({
+                output: function(text) {
+                    mypre.innerHTML += text;
+                },
+                read: function(x) {
+                    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
+                        throw "File not found: '" + x + "'";
+                    return Sk.builtinFiles["files"][x];
+                }
+            }); 
+            
+            var myPromise = Sk.misceval.asyncToPromise(function() {
+                return Sk.importMainWithBody("<stdin>", false, prog, true);
+            });
+            
+            myPromise.then(function(mod) {
+                console.log('Success');
+            }, function(err) {
+                mypre.innerHTML = err.toString();
+            });
+        }
+
+        // Submission Logic
+        async function submitExam() {
+            const results = {
+                student_name: "Student", 
+                q1_answer: document.getElementById('q1-code').value,
+                q2_answer: document.getElementById('q2-code').value,
+                submitted_at: new Date().toISOString()
+            };
+
+            console.log("Submitting:", results);
+            alert("Exam Submitted! Check your browser console to see the captured code.");
+        }
+    </script>
+</body>
+</html>
